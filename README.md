@@ -1,56 +1,74 @@
-# ResearchPilot V3 — Hybrid PDF Search
+# ResearchPilot — Hybrid Document Search Engine
 
-A **local retrieval system**, not an AI agent or answer-generating RAG chatbot. Upload text-based PDFs, build an ephemeral index and compare **Sentence Transformers + Chroma** semantic retrieval, **BM25** lexical retrieval and **Reciprocal Rank Fusion** hybrid retrieval. Streamlit UI, PDF/page citations and evaluation CSV included. **No paid API or API key.**
+ResearchPilot is a Python-based application that allows users to search multiple PDF documents using natural-language queries. It combines semantic search and keyword-based search to retrieve relevant information from research papers and other documents.
 
-## Quick start on Mac (Apple Silicon)
+The application runs locally without requiring an external API key.
 
-Use Python 3.11 or 3.12.
+## Features
+
+- Upload and search multiple PDF documents.
+- Semantic search using Sentence Transformers.
+- Keyword-based search using BM25.
+- Hybrid search using Reciprocal Rank Fusion (RRF).
+- Display relevant passages with PDF names and page numbers.
+- Compare different retrieval methods.
+- Evaluate search performance using Hit Rate@K and MRR.
+
+## Technologies Used
+
+- **Python** — Core application development
+- **Streamlit** — Web interface
+- **Sentence Transformers** — Text embeddings
+- **ChromaDB** — Vector database
+- **BM25** — Keyword-based retrieval
+- **PyMuPDF** — PDF text extraction
+
+## How It Works
+
+1. Users upload one or more PDF documents.
+2. The application extracts text and divides it into smaller passages.
+3. Text embeddings are generated for semantic search.
+4. BM25 and semantic search retrieve relevant passages.
+5. Hybrid search combines both methods to improve ranking.
+6. Results are displayed with source document names and page numbers.
+
+## Installation
+
+Clone the repository:
 
 ```bash
-cd researchpilot_v3_hybrid
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
+git clone https://github.com/Rahuljuturu/Research-pilot.git
+cd Research-pilot
+```
+
+Install the required libraries:
+
+```bash
 pip install -r requirements.txt
+```
+
+Run the application:
+
+```bash
 streamlit run app.py
 ```
 
-First run needs internet once to download Python packages and the `all-MiniLM-L6-v2` embedding model. After downloading, local processing needs no external service. Indexing speed depends on your Mac and number of pages.
+Open `http://localhost:8501` in your browser.
 
-## Test in 3 minutes
+## Example Queries
 
-1. Upload `1706.03762v7.pdf` (Transformer) and `2005.11401v4.pdf` (RAG), if available.
-2. Click **Build / replace index**.
-3. Ask `What is multi-head attention?` in Semantic, BM25 and Hybrid, observing differences in file, page and ranking.
-4. Ask `What are RAG-Sequence and RAG-Token?`, and check the RAG paper is retrieved.
-5. Remove a PDF and rebuild. Ensure its passages **never** reappear. Click **Clear index** to reset.
-6. Download the evaluation CSV template, populate expected pages from your actual documents, then run evaluations under each search method.
+- What is the Transformer architecture?
+- How does multi-head attention work?
+- What is Retrieval-Augmented Generation?
+- Why do language models struggle with long contexts?
 
-## Technical details
+## Future Improvements
 
-- **PDF parsing**: PyMuPDF, preserves original 1-indexed page number.
-- **Chunks**: 900-character windows, 150-character overlap (may cut a sentence).
-- **Embedding**: `sentence-transformers/all-MiniLM-L6-v2`, encoded locally, normalised vectors.
-- **Vector search**: Chroma EphemeralClient cosine distance. Lower is closer, **not probability**.
-- **Lexical search**: In-repo Python BM25 implementation (`hybrid.py`); no extra BM25 dependency.
-- **Hybrid ranking**: reciprocal rank fusion `1 / (60 + rank)` per retrieval list.
-- **Scope**: only PDFs selected for the active index. The index is in memory; no old Chroma storage is loaded. Change the upload selection → rebuild before searching.
-- **Evaluation**: `Hit Rate@k` and `MRR@k` using expected filename and optionally expected page. This is a weak relevance proxy when no page is specified, **not full information retrieval ground truth**.
+- Integrate a local LLM for question answering.
+- Add AI-generated summaries with citations.
+- Improve retrieval using advanced reranking techniques.
 
-## Limitations
+## Author
 
-- This is *hybrid information retrieval*, not agentic RAG; it does not generate answers or call an LLM.
-- Scanned image PDFs require OCR, not included.
-- Hybrid fusion uses the rankings even when a vector result is semantically weak; always inspect the actual passages.
-- Session-memory retrieval means restarting the Streamlit process will require reindexing.
-- Streamlit session state is per browser session; it is not an access-control or data-security boundary for a deployed multi-user server.
-- Not designed for sensitive documents or untrusted public deployments.
-
-## Resume (use only once tested)
-
-**ResearchPilot V3 — Hybrid Research Document Search** | Python, Sentence Transformers, ChromaDB, BM25, Streamlit
-
-- Built a multi-PDF information retrieval app integrating local transformer embeddings, BM25 keyword matching and Reciprocal Rank Fusion.
-- Added session-scoped document indexing, page-level evidence links and a benchmark view comparing search modes with Hit Rate@k and MRR@k.
-
-Report measured results from your own evaluation set; do not invent performance numbers.
+**Rahul Juturu**  
+Master of Information Technology — University of Technology Sydney (UTS)
